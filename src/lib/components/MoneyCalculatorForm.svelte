@@ -1,9 +1,11 @@
 <script>
 	import Decimal from 'decimal.js';
 	import { isValidMoneyValue } from '../utils/validators';
+	import NotificationMessage from './NotificationMessage.svelte';
 
 	let fields = [''];
 	let sum = '0';
+	let showNotification = false;
 
 	/**
 	 * @param {Event & { currentTarget: HTMLInputElement; }} event
@@ -36,6 +38,7 @@
 
 		if (isValidMoneyValue(`${value}${keyMap[event.key] || event.key}`)) {
 			event.preventDefault();
+			showNotification = true;
 		}
 	}
 
@@ -56,6 +59,24 @@
 			'de'
 		);
 	}
+
+	const notificationMessage = `
+	<h3>Value Suggestion</h3>
+	<p>We've blocked one or more invalid money value</p>
+	<p>Valid Examples:</p>
+	<ul>
+		<li>12,20</li>
+		<li>1,00</li>
+		<li>21</li>		
+	</ul>
+
+	<p>Invalid Examples:</p>
+	<ul>
+		<li>123,234</li>
+		<li>abc</li>
+		<li>002</li>		
+	</ul>
+	`;
 </script>
 
 <div class="container">
@@ -68,6 +89,7 @@
 		SUM: <input bind:value={sum} disabled />
 	</div>
 </div>
+<NotificationMessage message={notificationMessage} bind:visible={showNotification} />
 
 <style>
 	.container {
