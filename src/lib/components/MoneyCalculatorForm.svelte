@@ -36,7 +36,7 @@
 			ArrowRight: '\u2192'
 		};
 
-		if (isValidMoneyValue(`${value}${keyMap[event.key] || event.key}`)) {
+		if (!isValidMoneyValue(`${value}${keyMap[event.key] || event.key}`)) {
 			event.preventDefault();
 			showNotification = true;
 		}

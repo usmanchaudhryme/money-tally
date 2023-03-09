@@ -16,5 +16,5 @@
 export const isValidMoneyValue = (/** @type {string} */ value) => {
 	const allowedCharactersRegExp =
 		/^(?!0\d)(?!.*\,.*\,)(?:\d+|\d+\,\d{0,2})[\b\t\x08\x7f\u2190\u2192\u21e4\u21e5]*$/;
-	return !allowedCharactersRegExp.test(value);
+	return allowedCharactersRegExp.test(value);
 };
