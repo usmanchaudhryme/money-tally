@@ -1,7 +1,24 @@
+<script>
+	let fields = [''];
+
+	/**
+	 * @param {Event & { currentTarget: HTMLInputElement; }} event
+	 * @param {number} index
+	 */
+	function handleInput(event, index) {
+		fields[index] = event.currentTarget.value;
+		if (fields[index] && index === fields.length - 1) {
+			fields = [...fields, ''];
+		}
+	}
+</script>
+
 <div class="container">
-	<div class="row">
-		<input />
-	</div>
+	{#each fields as _, index}
+		<div class="row">
+			<input on:input={(event) => handleInput(event, index)} />
+		</div>
+	{/each}
 	<div class="row result">
 		SUM: <input disabled />
 	</div>
