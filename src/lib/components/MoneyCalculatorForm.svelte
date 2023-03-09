@@ -82,11 +82,15 @@
 <div class="container">
 	{#each fields as _, index}
 		<div class="row">
-			<input on:keydown={handleKeyDown} on:input={(event) => handleInput(event, index)} />
+			<input
+				id={`input_${index}`}
+				on:keydown={handleKeyDown}
+				on:input={(event) => handleInput(event, index)}
+			/>
 		</div>
 	{/each}
 	<div class="row result">
-		SUM: <input bind:value={sum} disabled />
+		SUM: <input id="sum" bind:value={sum} disabled />
 	</div>
 </div>
 <NotificationMessage message={notificationMessage} bind:visible={showNotification} />
