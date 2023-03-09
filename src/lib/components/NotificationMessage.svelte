@@ -1,10 +1,8 @@
 <script>
-	export let message = '';
-	export let visible = false;
 </script>
 
-<div class="info-message" class:hidden={!visible}>
-	{@html message}
+<div class="info-message">
+	<slot />
 </div>
 
 <style>
@@ -15,8 +13,5 @@
 		padding: 1rem;
 		background: lightblue;
 		border-radius: 0.5rem;
-	}
-	.info-message.hidden {
-		display: none;
 	}
 </style>

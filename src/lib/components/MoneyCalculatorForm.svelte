@@ -4,8 +4,18 @@
 	import NotificationMessage from './NotificationMessage.svelte';
 
 	let fields = [''];
-	let sum = '0';
 	let showNotification = false;
+
+	// a cleaner way to calculate this value is to use the reactivity magic by svelte
+	// this way you don't need to manually set the value
+	$: sum = getFormattedLocaleValue(
+		fields
+			.reduce((acc, val) => {
+				return acc.add(new Decimal(Number(getFormattedLocaleValue(val))));
+			}, new Decimal(0.0))
+			.toString(),
+		'de'
+	);
 
 	/**
 	 * @param {Event & { currentTarget: HTMLInputElement; }} event
@@ -13,7 +23,6 @@
 	 */
 	function handleInput(event, index) {
 		fields[index] = event.currentTarget.value;
-		calculateSum();
 		if (fields[index] && index === fields.length - 1) {
 			fields = [...fields, ''];
 		}
@@ -36,6 +45,9 @@
 			ArrowRight: '\u2192'
 		};
 
+		// i would escape all special keyboard codes
+		// that way Ctrl + R or Tab + Shift also work as expected
+
 		if (!isValidMoneyValue(`${value}${keyMap[event.key] || event.key}`)) {
 			event.preventDefault();
 			showNotification = true;
@@ -48,35 +60,6 @@
 	function getFormattedLocaleValue(value, locale = 'en') {
 		return locale === 'en' ? value.replace(',', '.') : value.replace('.', ',');
 	}
-
-	function calculateSum() {
-		sum = getFormattedLocaleValue(
-			fields
-				.reduce((acc, val) => {
-					return acc.add(new Decimal(Number(getFormattedLocaleValue(val))));
-				}, new Decimal(0.0))
-				.toString(),
-			'de'
-		);
-	}
-
-	const notificationMessage = `
-	<h3>Value Suggestion</h3>
-	<p>We've blocked one or more invalid money value</p>
-	<p>Valid Examples:</p>
-	<ul>
-		<li>12,20</li>
-		<li>1,00</li>
-		<li>21</li>		
-	</ul>
-
-	<p>Invalid Examples:</p>
-	<ul>
-		<li>123,234</li>
-		<li>abc</li>
-		<li>002</li>		
-	</ul>
-	`;
 </script>
 
 <div class="container">
@@ -90,21 +73,38 @@
 		</div>
 	{/each}
 	<div class="row result">
-		SUM: <input id="sum" bind:value={sum} disabled />
+		<!-- the bind: is unnecessary because it's just a one way data stream -->
+		SUM: <input id="sum" value={sum} disabled />
 	</div>
 </div>
-<NotificationMessage message={notificationMessage} bind:visible={showNotification} />
+{#if showNotification}
+	<NotificationMessage>
+		<!-- it's better to pass it as a slot into the <NotificationMessage> component -->
+		<!-- than hard code the html into a template string -->
+		<h3>Value Suggestion</h3>
+		<p>We've blocked one or more invalid money value</p>
+		<p>Valid Examples:</p>
+		<ul>
+			<li>12,20</li>
+			<li>1,00</li>
+			<li>21</li>
+		</ul>
+
+		<p>Invalid Examples:</p>
+		<ul>
+			<li>123,234</li>
+			<li>abc</li>
+			<li>002</li>
+		</ul>
+	</NotificationMessage>
+{/if}
 
 <style>
+	/* there must be a better way to center a div :) */
 	.container {
 		display: flex;
 		flex-direction: column;
-		max-width: 300px;
-		justify-content: center;
-		position: relative;
-		top: 50%;
-		left: 50%;
-		transform: translate(-58%);
+		place-items: center;
 	}
 	.row {
 		border: 2px solid darkgray;
