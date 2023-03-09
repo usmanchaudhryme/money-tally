@@ -1,5 +1,6 @@
 <script>
 	import Decimal from 'decimal.js';
+	import { isValidMoneyValue } from '../utils/validators';
 
 	let fields = [''];
 	let sum = '0';
@@ -13,6 +14,28 @@
 		calculateSum();
 		if (fields[index] && index === fields.length - 1) {
 			fields = [...fields, ''];
+		}
+	}
+
+	/**
+	 * @param {KeyboardEvent & { currentTarget: HTMLInputElement } } event
+	 */
+	function handleKeyDown(event) {
+		const value = event.currentTarget.value;
+		/**
+		 * @type {{[key: string]: string}}
+		 */
+		const keyMap = {
+			Backspace: '\b',
+			Tab: '\t',
+			Delete: '\x08',
+			Shift: '\x7f',
+			ArrowLeft: '\u2190',
+			ArrowRight: '\u2192'
+		};
+
+		if (isValidMoneyValue(`${value}${keyMap[event.key] || event.key}`)) {
+			event.preventDefault();
 		}
 	}
 
@@ -38,7 +61,7 @@
 <div class="container">
 	{#each fields as _, index}
 		<div class="row">
-			<input on:input={(event) => handleInput(event, index)} />
+			<input on:keydown={handleKeyDown} on:input={(event) => handleInput(event, index)} />
 		</div>
 	{/each}
 	<div class="row result">
