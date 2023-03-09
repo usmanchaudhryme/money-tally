@@ -1,5 +1,8 @@
 <script>
+	import Decimal from 'decimal.js';
+
 	let fields = [''];
+	let sum = '0';
 
 	/**
 	 * @param {Event & { currentTarget: HTMLInputElement; }} event
@@ -7,9 +10,28 @@
 	 */
 	function handleInput(event, index) {
 		fields[index] = event.currentTarget.value;
+		calculateSum();
 		if (fields[index] && index === fields.length - 1) {
 			fields = [...fields, ''];
 		}
+	}
+
+	/**
+	 * @param {string} value
+	 */
+	function getFormattedLocaleValue(value, locale = 'en') {
+		return locale === 'en' ? value.replace(',', '.') : value.replace('.', ',');
+	}
+
+	function calculateSum() {
+		sum = getFormattedLocaleValue(
+			fields
+				.reduce((acc, val) => {
+					return acc.add(new Decimal(Number(getFormattedLocaleValue(val))));
+				}, new Decimal(0.0))
+				.toString(),
+			'de'
+		);
 	}
 </script>
 
@@ -20,7 +42,7 @@
 		</div>
 	{/each}
 	<div class="row result">
-		SUM: <input disabled />
+		SUM: <input bind:value={sum} disabled />
 	</div>
 </div>
 
@@ -60,5 +82,8 @@
 		font-size: 1.5rem;
 		font-weight: 400;
 		border: 2px solid darkgray;
+	}
+	input:disabled {
+		border: 2px solid lightgray;
 	}
 </style>
