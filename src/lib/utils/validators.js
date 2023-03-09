@@ -1,6 +1,7 @@
 /**
  * Regular expression matching valid money value input in German i.e. comma is used instead of period
  * Valid values:
+ * 1,
  * 1,0
  * 223,12
  * 12,11
